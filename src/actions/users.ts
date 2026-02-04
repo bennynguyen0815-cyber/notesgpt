@@ -46,8 +46,10 @@ export const signUpAction = async (email: string, password: string) => {
     const userId = data.user?.id;
     if (!userId) throw new Error("Error signing up");
     
-    await prisma.user.create({ 
-        data: {
+    await prisma.user.upsert({
+        where: { email },
+        update: {},
+        create: {
             id: userId,
             email: email,
         },

@@ -21,8 +21,10 @@ export async function signUpAction(email: string, password: string) {
   
   if (!error && data.user) {
     try {
-      await prisma.user.create({
-        data: {
+      await prisma.user.upsert({
+        where: { email: data.user.email! },
+        update: {},
+        create: {
           id: data.user.id,
           email: data.user.email!,
         },
