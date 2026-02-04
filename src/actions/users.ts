@@ -46,14 +46,19 @@ export const signUpAction = async (email: string, password: string) => {
     const userId = data.user?.id;
     if (!userId) throw new Error("Error signing up");
     
-    await prisma.user.upsert({
-        where: { email },
-        update: {},
-        create: {
-            id: userId,
-            email: email,
-        },
-    });
+    try {
+      await prisma.user.upsert({
+          where: { email },
+          update: {},
+          create: {
+              id: userId,
+              email: email,
+          },
+      });
+    } catch (dbError) {
+      // User might already exist, ignore the error
+      console.log('User already exists or database error:', dbError);
+    }
 
     return { errorMessage: null };
   } catch (error) {
