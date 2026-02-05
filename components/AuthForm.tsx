@@ -42,7 +42,7 @@ function AuthForm({type} : Props) {
         description,
       })
       if (isLoginForm) {
-        router.replace("/");
+        router.replace("/dashboard");
       }
       // For signup, don't redirect - user needs to verify email
     } else {
