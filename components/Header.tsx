@@ -13,7 +13,7 @@ async function Header() {
     <header className='relative flex h-24 w-full items-center justify-between bg-popover px-3
     sm:px-8' style={{boxShadow: shadow}}>
       <SidebarTrigger className='absolute left-1 top-1' />
-      <Link className="flex items-end gap-2" href="/">
+      <Link className="flex items-end gap-2" href="/dashboard">
       <Image 
       src="/monkey.png" 
       height={60} 
