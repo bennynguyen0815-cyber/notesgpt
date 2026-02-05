@@ -10,18 +10,14 @@ export const createNoteAction = async (noteId: string) => {
     if (!user) throw new Error("You must be logged in to create a note");
 
     // Ensure user exists in database
-    const existingUser = await prisma.user.findUnique({
+    await prisma.user.upsert({
       where: { id: user.id },
+      update: {},
+      create: {
+        id: user.id,
+        email: user.email || '',
+      },
     });
-
-    if (!existingUser) {
-      await prisma.user.create({
-        data: {
-          id: user.id,
-          email: user.email || '',
-        },
-      });
-    }
 
     await prisma.note.create({
         data: {
