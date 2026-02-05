@@ -12,7 +12,7 @@ export const createNoteAction = async (noteId: string) => {
     // Ensure user exists in database
     await prisma.user.upsert({
       where: { id: user.id },
-      update: {},
+      update: { email: user.email || '' },
       create: {
         id: user.id,
         email: user.email || '',

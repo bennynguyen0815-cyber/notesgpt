@@ -10,14 +10,18 @@ export async function POST(request: NextRequest) {
   }
 
   // Ensure the user exists in the database so the FK constraint won't fail
-  await prisma.user.upsert({
-    where: { id: userId },
-    update: {},
-    create: {
-      id: userId,
-      email: "",
-    },
-  });
+  try {
+    await prisma.user.upsert({
+      where: { id: userId },
+      update: {},
+      create: {
+        id: userId,
+        email: "",
+      },
+    });
+  } catch (error) {
+    console.error('User upsert failed:', error);
+  }
 
   const { id } = await prisma.note.create({
     data: {
