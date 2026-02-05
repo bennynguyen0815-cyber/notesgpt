@@ -21,7 +21,6 @@ export async function signUpAction(email: string, password: string) {
   
   if (!error && data.user) {
     try {
-    try {
       await prisma.user.upsert({
         where: { email: data.user.email! },
         update: {},
@@ -32,9 +31,6 @@ export async function signUpAction(email: string, password: string) {
       })
     } catch (dbError) {
       console.error('User already exists or database error:', dbError)
-    }
-    } catch (dbError) {
-      console.error('Failed to create user in database:', dbError)
     }
   }
   
