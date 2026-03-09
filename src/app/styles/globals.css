@@ -46,6 +46,7 @@
   --radius-4xl: calc(var(--radius) + 16px);
 }
 
+
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
@@ -157,3 +158,4 @@
 .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: hsl(222.2 47.4% 11.2%);
 }
+
