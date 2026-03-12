@@ -37,18 +37,23 @@ function AskAIButton({user, noteId}: Props) {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      // Clear current state first
+      setQuestions([]);
+      setResponses([]);
+      
+      // Then load the appropriate chat history
       const storageKey = (noteId && noteId.trim()) ? `chat_questions_${noteId}` : 'chat_questions_global';
       const responseKey = (noteId && noteId.trim()) ? `chat_responses_${noteId}` : 'chat_responses_global';
       
-      console.log('Loading chat for noteId:', noteId, 'using keys:', storageKey, responseKey);
-      
       const savedQuestions = localStorage.getItem(storageKey);
       const savedResponses = localStorage.getItem(responseKey);
-      setQuestions(savedQuestions ? JSON.parse(savedQuestions) : []);
-      setResponses(savedResponses ? JSON.parse(savedResponses) : []);
-    } else {
-      setQuestions([]);
-      setResponses([]);
+      
+      if (savedQuestions) {
+        setQuestions(JSON.parse(savedQuestions));
+      }
+      if (savedResponses) {
+        setResponses(JSON.parse(savedResponses));
+      }
     }
   }, [noteId]);
 
@@ -101,7 +106,6 @@ function AskAIButton({user, noteId}: Props) {
     setQuestions(newQuestions);
     
     const storageKey = (noteId && noteId.trim()) ? `chat_questions_${noteId}` : 'chat_questions_global';
-    console.log('Saving questions to:', storageKey, 'for noteId:', noteId);
     localStorage.setItem(storageKey, JSON.stringify(newQuestions));
     
     setQuestionText("");
@@ -114,7 +118,6 @@ function AskAIButton({user, noteId}: Props) {
         setResponses(newResponses);
         
         const responseKey = (noteId && noteId.trim()) ? `chat_responses_${noteId}` : 'chat_responses_global';
-        console.log('Saving responses to:', responseKey, 'for noteId:', noteId);
         localStorage.setItem(responseKey, JSON.stringify(newResponses));
         
         setTimeout(scrollToBottom, 100);
