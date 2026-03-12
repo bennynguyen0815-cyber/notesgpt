@@ -34,14 +34,20 @@ function AskAIButton({user, noteId}: Props) {
   const [questionText, setQuestionText] = useState("")
   const [questions, setQuestions] = useState<string[]>([]);
   const [responses, setResponses] = useState<string[]>([]);
+  const [currentNoteId, setCurrentNoteId] = useState(noteId);
+
+  // Force component to reset when noteId changes
+  useEffect(() => {
+    if (currentNoteId !== noteId) {
+      setCurrentNoteId(noteId);
+      setQuestions([]);
+      setResponses([]);
+      setQuestionText("");
+    }
+  }, [noteId, currentNoteId]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // Clear current state first
-      setQuestions([]);
-      setResponses([]);
-      
-      // Then load the appropriate chat history
       const storageKey = (noteId && noteId.trim()) ? `chat_questions_${noteId}` : 'chat_questions_global';
       const responseKey = (noteId && noteId.trim()) ? `chat_responses_${noteId}` : 'chat_responses_global';
       
@@ -55,7 +61,7 @@ function AskAIButton({user, noteId}: Props) {
         setResponses(JSON.parse(savedResponses));
       }
     }
-  }, [noteId]);
+  }, [currentNoteId]);
 
 
   const handleOnOpenChange = (isOpen: boolean) => {
