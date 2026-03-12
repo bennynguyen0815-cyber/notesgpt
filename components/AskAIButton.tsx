@@ -142,16 +142,9 @@ function AskAIButton({user, noteId}: Props) {
                   Ask questions about your notes here.
                 </DialogDescription>
               </div>
-              {(questions.length > 0 || responses.length > 0) && (
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  onClick={handleClearChat}
-                  title="Clear chat history"
-                >
-                  <Trash2Icon className="h-4 w-4" />
-                </Button>
-              )}
+              <Button variant="ghost" size="icon" onClick={handleClearChat} disabled={questions.length === 0}>
+                <Trash2Icon className="h-4 w-4" />
+              </Button>
             </div>
           </DialogHeader>
 
