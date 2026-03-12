@@ -37,8 +37,8 @@ function AskAIButton({user, noteId}: Props) {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const storageKey = noteId ? `chat_questions_${noteId}` : 'chat_questions_global';
-      const responseKey = noteId ? `chat_responses_${noteId}` : 'chat_responses_global';
+      const storageKey = (noteId && noteId.trim()) ? `chat_questions_${noteId}` : 'chat_questions_global';
+      const responseKey = (noteId && noteId.trim()) ? `chat_responses_${noteId}` : 'chat_responses_global';
       
       console.log('Loading chat for noteId:', noteId, 'using keys:', storageKey, responseKey);
       
@@ -88,8 +88,8 @@ function AskAIButton({user, noteId}: Props) {
     setResponses([]);
     
     // Clear localStorage
-    const storageKey = noteId ? `chat_questions_${noteId}` : 'chat_questions_global';
-    const responseKey = noteId ? `chat_responses_${noteId}` : 'chat_responses_global';
+    const storageKey = (noteId && noteId.trim()) ? `chat_questions_${noteId}` : 'chat_questions_global';
+    const responseKey = (noteId && noteId.trim()) ? `chat_responses_${noteId}` : 'chat_responses_global';
     localStorage.removeItem(storageKey);
     localStorage.removeItem(responseKey);
   }
@@ -100,7 +100,7 @@ function AskAIButton({user, noteId}: Props) {
     const newQuestions = [...questions, questionText];
     setQuestions(newQuestions);
     
-    const storageKey = noteId ? `chat_questions_${noteId}` : 'chat_questions_global';
+    const storageKey = (noteId && noteId.trim()) ? `chat_questions_${noteId}` : 'chat_questions_global';
     console.log('Saving questions to:', storageKey, 'for noteId:', noteId);
     localStorage.setItem(storageKey, JSON.stringify(newQuestions));
     
@@ -113,7 +113,7 @@ function AskAIButton({user, noteId}: Props) {
         const newResponses = [...responses, response];
         setResponses(newResponses);
         
-        const responseKey = noteId ? `chat_responses_${noteId}` : 'chat_responses_global';
+        const responseKey = (noteId && noteId.trim()) ? `chat_responses_${noteId}` : 'chat_responses_global';
         console.log('Saving responses to:', responseKey, 'for noteId:', noteId);
         localStorage.setItem(responseKey, JSON.stringify(newResponses));
         
@@ -123,7 +123,7 @@ function AskAIButton({user, noteId}: Props) {
         const errorResponse = [...responses, "An error occurred. Please try again."];
         setResponses(errorResponse);
         
-        const responseKey = noteId ? `chat_responses_${noteId}` : 'chat_responses_global';
+        const responseKey = (noteId && noteId.trim()) ? `chat_responses_${noteId}` : 'chat_responses_global';
         localStorage.setItem(responseKey, JSON.stringify(errorResponse));
       }
     })
