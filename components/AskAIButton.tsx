@@ -137,18 +137,24 @@ function AskAIButton({user, noteId}: Props) {
         </DialogTrigger>
         <DialogContent className="custom-scrollbar flex h-[85vh] max-w-4xl flex-col overflow-y-auto" ref={contentRef}>
           <DialogHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <DialogTitle>Ask Monke</DialogTitle>
-                <DialogDescription>
-                  Ask questions about your notes here.
-                </DialogDescription>
-              </div>
-              <Button variant="ghost" size="icon" onClick={handleClearChat} disabled={questions.length === 0}>
-                <Trash2Icon className="h-4 w-4" />
-              </Button>
-            </div>
+            <DialogTitle>Ask Monke</DialogTitle>
+            <DialogDescription>
+              Ask questions about your notes here.
+            </DialogDescription>
           </DialogHeader>
+          
+          <div className="flex justify-end mb-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleClearChat} 
+              disabled={questions.length === 0}
+              type="button"
+            >
+              <Trash2Icon className="h-4 w-4 mr-2" />
+              Clear Chat
+            </Button>
+          </div>
 
           <div className="mt-4 flex flex-col gap-8">
             {questions.map((question, index) => (
