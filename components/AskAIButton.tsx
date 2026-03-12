@@ -74,7 +74,9 @@ function AskAIButton({user, noteId}: Props) {
     textareaRef.current?.focus();
   }
 
-  const handleClearChat = () => {
+  const handleClearChat = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (noteId) {
       localStorage.removeItem(`chat_questions_${noteId}`);
       localStorage.removeItem(`chat_responses_${noteId}`);
