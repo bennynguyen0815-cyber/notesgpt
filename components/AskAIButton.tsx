@@ -77,11 +77,15 @@ function AskAIButton({user, noteId}: Props) {
   const handleClearChat = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    // Clear state immediately
+    setQuestions([]);
+    setResponses([]);
+    
+    // Clear localStorage if noteId exists
     if (noteId) {
       localStorage.removeItem(`chat_questions_${noteId}`);
       localStorage.removeItem(`chat_responses_${noteId}`);
-      setQuestions([]);
-      setResponses([]);
     }
   }
 
