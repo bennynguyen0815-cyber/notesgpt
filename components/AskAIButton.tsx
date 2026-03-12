@@ -36,9 +36,12 @@ function AskAIButton({user, noteId}: Props) {
   const [responses, setResponses] = useState<string[]>([]);
 
   useEffect(() => {
-    if (noteId && typeof window !== 'undefined') {
-      const savedQuestions = localStorage.getItem(`chat_questions_${noteId}`);
-      const savedResponses = localStorage.getItem(`chat_responses_${noteId}`);
+    if (typeof window !== 'undefined') {
+      const storageKey = noteId ? `chat_questions_${noteId}` : 'chat_questions_global';
+      const responseKey = noteId ? `chat_responses_${noteId}` : 'chat_responses_global';
+      
+      const savedQuestions = localStorage.getItem(storageKey);
+      const savedResponses = localStorage.getItem(responseKey);
       setQuestions(savedQuestions ? JSON.parse(savedQuestions) : []);
       setResponses(savedResponses ? JSON.parse(savedResponses) : []);
     } else {
@@ -82,11 +85,11 @@ function AskAIButton({user, noteId}: Props) {
     setQuestions([]);
     setResponses([]);
     
-    // Clear localStorage if noteId exists
-    if (noteId) {
-      localStorage.removeItem(`chat_questions_${noteId}`);
-      localStorage.removeItem(`chat_responses_${noteId}`);
-    }
+    // Clear localStorage
+    const storageKey = noteId ? `chat_questions_${noteId}` : 'chat_questions_global';
+    const responseKey = noteId ? `chat_responses_${noteId}` : 'chat_responses_global';
+    localStorage.removeItem(storageKey);
+    localStorage.removeItem(responseKey);
   }
 
   const handleSubmit = () => {
@@ -94,9 +97,10 @@ function AskAIButton({user, noteId}: Props) {
 
     const newQuestions = [...questions, questionText];
     setQuestions(newQuestions);
-    if (noteId) {
-      localStorage.setItem(`chat_questions_${noteId}`, JSON.stringify(newQuestions));
-    }
+    
+    const storageKey = noteId ? `chat_questions_${noteId}` : 'chat_questions_global';
+    localStorage.setItem(storageKey, JSON.stringify(newQuestions));
+    
     setQuestionText("");
     setTimeout(scrollToBottom, 100);
 
@@ -105,17 +109,18 @@ function AskAIButton({user, noteId}: Props) {
         const response = await askAIAboutNotesAction(newQuestions, responses);
         const newResponses = [...responses, response];
         setResponses(newResponses);
-        if (noteId) {
-          localStorage.setItem(`chat_responses_${noteId}`, JSON.stringify(newResponses));
-        }
+        
+        const responseKey = noteId ? `chat_responses_${noteId}` : 'chat_responses_global';
+        localStorage.setItem(responseKey, JSON.stringify(newResponses));
+        
         setTimeout(scrollToBottom, 100);
       } catch (error) {
         console.error('Submit error:', error);
         const errorResponse = [...responses, "An error occurred. Please try again."];
         setResponses(errorResponse);
-        if (noteId) {
-          localStorage.setItem(`chat_responses_${noteId}`, JSON.stringify(errorResponse));
-        }
+        
+        const responseKey = noteId ? `chat_responses_${noteId}` : 'chat_responses_global';
+        localStorage.setItem(responseKey, JSON.stringify(errorResponse));
       }
     })
   }
