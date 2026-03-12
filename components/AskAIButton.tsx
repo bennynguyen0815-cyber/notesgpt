@@ -14,25 +14,38 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useRouter } from "next/navigation";
-import { Fragment, useRef, useState, useTransition } from "react";
+import { Fragment, useEffect, useRef, useState, useTransition } from "react";
 import { Textarea } from "./ui/textarea";
 import { Arrow } from "@radix-ui/react-tooltip";
-import { ArrowUpIcon } from "lucide-react";
+import { ArrowUpIcon, Trash2Icon } from "lucide-react";
 import { askAIAboutNotesAction } from "@/src/actions/notes";
 import "@/src/styles/ai-response.css"
 
 type Props = {
     user : User | null;
+    noteId?: string;
 }
 
 
-function AskAIButton({user}: Props) {
+function AskAIButton({user, noteId}: Props) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [open, setOpen] = useState(false)
   const [questionText, setQuestionText] = useState("")
   const [questions, setQuestions] = useState<string[]>([]);
   const [responses, setResponses] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (noteId && typeof window !== 'undefined') {
+      const savedQuestions = localStorage.getItem(`chat_questions_${noteId}`);
+      const savedResponses = localStorage.getItem(`chat_responses_${noteId}`);
+      setQuestions(savedQuestions ? JSON.parse(savedQuestions) : []);
+      setResponses(savedResponses ? JSON.parse(savedResponses) : []);
+    } else {
+      setQuestions([]);
+      setResponses([]);
+    }
+  }, [noteId]);
 
 
   const handleOnOpenChange = (isOpen: boolean) => {
@@ -42,8 +55,6 @@ function AskAIButton({user}: Props) {
       setOpen(isOpen)
       if (isOpen) {
         setQuestionText("");
-        setQuestions([]);
-        setResponses([]);
       }
     }
   }
@@ -63,22 +74,42 @@ function AskAIButton({user}: Props) {
     textareaRef.current?.focus();
   }
 
+  const handleClearChat = () => {
+    if (noteId) {
+      localStorage.removeItem(`chat_questions_${noteId}`);
+      localStorage.removeItem(`chat_responses_${noteId}`);
+      setQuestions([]);
+      setResponses([]);
+    }
+  }
+
   const handleSubmit = () => {
     if (!questionText.trim()) return;
 
     const newQuestions = [...questions, questionText];
     setQuestions(newQuestions);
+    if (noteId) {
+      localStorage.setItem(`chat_questions_${noteId}`, JSON.stringify(newQuestions));
+    }
     setQuestionText("");
     setTimeout(scrollToBottom, 100);
 
     startTransition(async () => {
       try {
         const response = await askAIAboutNotesAction(newQuestions, responses);
-        setResponses([...responses, response]);
+        const newResponses = [...responses, response];
+        setResponses(newResponses);
+        if (noteId) {
+          localStorage.setItem(`chat_responses_${noteId}`, JSON.stringify(newResponses));
+        }
         setTimeout(scrollToBottom, 100);
       } catch (error) {
         console.error('Submit error:', error);
-        setResponses([...responses, "An error occurred. Please try again."]);
+        const errorResponse = [...responses, "An error occurred. Please try again."];
+        setResponses(errorResponse);
+        if (noteId) {
+          localStorage.setItem(`chat_responses_${noteId}`, JSON.stringify(errorResponse));
+        }
       }
     })
   }
@@ -104,10 +135,24 @@ function AskAIButton({user}: Props) {
         </DialogTrigger>
         <DialogContent className="custom-scrollbar flex h-[85vh] max-w-4xl flex-col overflow-y-auto" ref={contentRef}>
           <DialogHeader>
-            <DialogTitle>Ask Monke</DialogTitle>
-            <DialogDescription>
-              Ask questions about your notes here.
-            </DialogDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <DialogTitle>Ask Monke</DialogTitle>
+                <DialogDescription>
+                  Ask questions about your notes here.
+                </DialogDescription>
+              </div>
+              {(questions.length > 0 || responses.length > 0) && (
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={handleClearChat}
+                  title="Clear chat history"
+                >
+                  <Trash2Icon className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
           </DialogHeader>
 
           <div className="mt-4 flex flex-col gap-8">
