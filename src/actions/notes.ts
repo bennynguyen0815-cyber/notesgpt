@@ -5,14 +5,12 @@ import { getUser } from "../app/auth/server";
 import { prisma } from "../db/prisma";
 import { ChatCompletionMessageParam } from "openai/resources/index.mjs";
 import openai from "../openai";
-import { revalidatePath } from "next/cache";
 
 export const createNoteAction = async (noteId: string) => {
   try {
-   const user = await getUser();
+  const user = await getUser();
     if (!user) throw new Error("You must be logged in to create a note");
 
-    // Ensure user exists in database
     await prisma.user.upsert({
       where: { id: user.id },
       update: {},
@@ -30,7 +28,6 @@ export const createNoteAction = async (noteId: string) => {
         },
     });
 
-    revalidatePath('/dashboard');
     return { errorMessage: null };
   } catch (error) {
     console.error('Create note failed:', error);
@@ -39,7 +36,7 @@ export const createNoteAction = async (noteId: string) => {
 };
 export const updateNoteAction = async (noteId: string, text: string) => {
   try {
-   const user = await getUser();
+  const user = await getUser();
     if (!user) throw new Error("You must be logged in to update a note");
 
     await prisma.note.update({
@@ -47,7 +44,6 @@ export const updateNoteAction = async (noteId: string, text: string) => {
         data: { text },
     });
 
-    revalidatePath('/dashboard');
     return { errorMessage: null };
   } catch (error) {
     console.error('Update note failed:', error);
@@ -64,14 +60,12 @@ export const deleteNoteAction = async (noteId: string) => {
       where: { id: noteId, authorId: user.id },
     });
 
-    // Get the newest note after deletion
     const newestNote = await prisma.note.findFirst({
       where: { authorId: user.id },
       orderBy: { updatedAt: "desc" },
       select: { id: true },
     });
 
-    revalidatePath('/dashboard');
     return { errorMessage: null, newestNoteId: newestNote?.id || null };
   } catch (error) {
     console.error('Delete note failed:', error);
