@@ -64,10 +64,35 @@ export const deleteNoteAction = async (noteId: string) => {
       where: { id: noteId, authorId: user.id },
     });
 
+    // Get the newest note after deletion
+    const newestNote = await prisma.note.findFirst({
+      where: { authorId: user.id },
+      orderBy: { updatedAt: "desc" },
+      select: { id: true },
+    });
+
     revalidatePath('/dashboard');
-    return { errorMessage: null };
+    return { errorMessage: null, newestNoteId: newestNote?.id || null };
   } catch (error) {
     console.error('Delete note failed:', error);
+    return handleError(error);
+  }
+};
+
+export const getNewestNoteAction = async () => {
+  try {
+    const user = await getUser();
+    if (!user) return { errorMessage: "Not logged in", newestNoteId: null };
+
+    const newestNote = await prisma.note.findFirst({
+      where: { authorId: user.id },
+      orderBy: { updatedAt: "desc" },
+      select: { id: true },
+    });
+
+    return { errorMessage: null, newestNoteId: newestNote?.id || null };
+  } catch (error) {
+    console.error('Get newest note failed:', error);
     return handleError(error);
   }
 };

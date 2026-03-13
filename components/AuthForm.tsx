@@ -11,6 +11,7 @@ import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { error } from "console";
 import { loginAction, signUpAction } from "@/src/app/action";
+import { getNewestNoteAction } from "@/src/actions/notes";
 type Props = {
     type: "login" | "register";
 }
@@ -42,7 +43,13 @@ function AuthForm({type} : Props) {
         description,
       })
       if (isLoginForm) {
-        router.replace("/");
+        // Get the latest note and redirect there
+        const { newestNoteId } = await getNewestNoteAction();
+        if (newestNoteId) {
+          router.replace(`/?noteId=${newestNoteId}`);
+        } else {
+          router.replace("/");
+        }
       }
       // For signup, don't redirect - user needs to verify email
     } else {
