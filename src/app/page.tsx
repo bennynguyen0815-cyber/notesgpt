@@ -3,6 +3,7 @@ import { prisma } from "../db/prisma";
 import { getUser } from "./auth/server";
 import NewNoteButton from "@/components/NewNoteButton";
 import NoteTextInput from "@/components/NoteTextInput";
+import { redirect } from "next/navigation";
 type Props = {
   searchParams: Promise<{[key : string]: string | string[] | undefined }>
 }
@@ -15,6 +16,19 @@ async function HomePage({searchParams}: Props) {
   const noteId = Array.isArray(noteIdParam) 
   ? noteIdParam![0] 
   : noteIdParam || "";
+
+  // If user is logged in but no noteId provided, redirect to latest note
+  if (user && !noteId) {
+    const newestNote = await prisma.note.findFirst({
+      where: { authorId: user.id },
+      orderBy: { updatedAt: "desc" },
+      select: { id: true },
+    });
+    
+    if (newestNote) {
+      redirect(`/?noteId=${newestNote.id}`);
+    }
+  }
 
   let note = null;
   

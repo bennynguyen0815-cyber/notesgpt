@@ -6,6 +6,7 @@ import { DarkModeToggle } from './DarkModeToggle'
 import LogOutButton from './LogOutButton'
 import { getUser } from '@/src/app/auth/server'
 import { SidebarTrigger } from './ui/sidebar'
+import LogoLink from './LogoLink'
 
 async function Header() {
   const user = await getUser();
@@ -13,20 +14,21 @@ async function Header() {
     <header className='relative flex h-24 w-full items-center justify-between bg-popover px-3
     sm:px-8' style={{boxShadow: shadow}}>
       <SidebarTrigger className='absolute left-1 top-1' />
-      <Link className="flex items-end gap-2" href="/dashboard">
-      <Image 
-      src="/monkey.png" 
-      height={60} 
-      width={60} 
-      alt="logo" 
-      className="rounded-full" 
-      priority
-      />
-
-      <h1 className='flex flex-col pb-1 text-2xl font-bold leading-6'>
-        Notes<span>GPT</span>
-      </h1>
-      </Link>
+      {user ? <LogoLink /> : (
+        <Link className="flex items-end gap-2" href="/">
+          <Image 
+            src="/monkey.png" 
+            height={60} 
+            width={60} 
+            alt="logo" 
+            className="rounded-full" 
+            priority
+          />
+          <h1 className='flex flex-col pb-1 text-2xl font-bold leading-6'>
+            Notes<span>GPT</span>
+          </h1>
+        </Link>
+      )}
 
       <div className='flex gap-4'>
         {user ? (
