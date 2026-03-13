@@ -57,8 +57,7 @@ function DeleteNoteButton({noteId, deleteNoteLocally}: Props) {
         <AlertDialogHeader>
           <AlertDialogTitle>Are you sure you want this note deleted?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your note
-            from our servers.
+            This action cannot be undone. The monkey will forget your notes.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
