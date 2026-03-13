@@ -34,17 +34,6 @@ function AskAIButton({user, noteId}: Props) {
   const [questionText, setQuestionText] = useState("")
   const [questions, setQuestions] = useState<string[]>([]);
   const [responses, setResponses] = useState<string[]>([]);
-  const [currentNoteId, setCurrentNoteId] = useState(noteId);
-
-  // Force component to reset when noteId changes
-  useEffect(() => {
-    if (currentNoteId !== noteId) {
-      setCurrentNoteId(noteId);
-      setQuestions([]);
-      setResponses([]);
-      setQuestionText("");
-    }
-  }, [noteId, currentNoteId]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -54,14 +43,11 @@ function AskAIButton({user, noteId}: Props) {
       const savedQuestions = localStorage.getItem(storageKey);
       const savedResponses = localStorage.getItem(responseKey);
       
-      if (savedQuestions) {
-        setQuestions(JSON.parse(savedQuestions));
-      }
-      if (savedResponses) {
-        setResponses(JSON.parse(savedResponses));
-      }
+      setQuestions(savedQuestions ? JSON.parse(savedQuestions) : []);
+      setResponses(savedResponses ? JSON.parse(savedResponses) : []);
+      setQuestionText("");
     }
-  }, [currentNoteId]);
+  }, [noteId]);
 
 
   const handleOnOpenChange = (isOpen: boolean) => {
